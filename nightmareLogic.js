@@ -35,13 +35,25 @@ module.exports = function startNightmare(promptData) {
 
     //console.log(chalk.yellow(JSON.stringify(promptData)))
 
-    //login to brightspace
+    //login to PATHWAY
+    // CURRENTLY LOGING INTO I-LEARN
     nightmare
         .goto('https://byui.brightspace.com/d2l/login?noredirect=true')
         .wait('input#userName')
-        .insert('input#userName', promptData.username)
-        .insert('input#password', promptData.password)
+        .type('input#userName', promptData.username)
+        .type('input#password', promptData.password)
         .click('form.d2l-form-primary button')
-        .wait('')
+        .wait('.d2l-navigation-s-course-menu button.d2l-navigation-s-button-highlight')
+        .evaluate(function () {
+            document.querySelector('.d2l-navigation-s-course-menu .d2l-dropdown-content-1').setAttribute('opened', '');
+        })
+        .type('.d2l-courseselector-wrapper vui-input-search-container>input.vui-input', 'Joshua McKinney - Sandbox - mckinneyjs')
+        /*.goto('https://byui.brightspace.com/d2l/home/10011')
+        //.wait('div.d2l-navigation-s-item:nth-child(7) button.d2l-dropdown-opener')
+        .wait('div.d2l-navigation-s-item:nth-child(7) .d2l-navigation-s-menu-item-root[text="Course Admin"]>a')
+        .click('div.d2l-navigation-s-item:nth-child(7) .d2l-navigation-s-menu-item-root[text="Course Admin"]>a')*/
+        .then(function (results) {
+            console.log(results);
+        })
 
 }
