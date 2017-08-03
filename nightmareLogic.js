@@ -44,16 +44,20 @@ module.exports = function startNightmare(promptData) {
         .type('input#password', promptData.password)
         .click('form.d2l-form-primary button')
         .wait('.d2l-navigation-s-course-menu button.d2l-navigation-s-button-highlight')
-        .evaluate(function () {
-            document.querySelector('.d2l-navigation-s-course-menu .d2l-dropdown-content-1').setAttribute('opened', '');
-        })
-        .type('.d2l-courseselector-wrapper vui-input-search-container>input.vui-input', 'Joshua McKinney - Sandbox - mckinneyjs')
-        /*.goto('https://byui.brightspace.com/d2l/home/10011')
-        //.wait('div.d2l-navigation-s-item:nth-child(7) button.d2l-dropdown-opener')
-        .wait('div.d2l-navigation-s-item:nth-child(7) .d2l-navigation-s-menu-item-root[text="Course Admin"]>a')
-        .click('div.d2l-navigation-s-item:nth-child(7) .d2l-navigation-s-menu-item-root[text="Course Admin"]>a')*/
+        .click('button[data-prl="/d2l/lp/courseSelector/6606/InitPartial"]')
+        .wait('.d2l-courseselector-wrapper input.vui-input')
+        .type('.d2l-courseselector-wrapper input.vui-input', 'Joshua McKinney - Sandbox')
+        .click('input.vui-input-search-button')
+        .wait(3000)
+        .click('#courseSelectorId li:first-child a.d2l-link') //go to course
+        .wait('.d2l-navigation-s-item:nth-child(7) d2l-menu-item-link:nth-child(6) a.d2l-menu-item-link') // open course admin without openeing dropdown?
+        .click('.d2l-navigation-s-item:nth-child(7) d2l-menu-item-link:nth-child(6) a.d2l-menu-item-link')
+        //.end()
         .then(function (results) {
             console.log(results);
+        })
+        .catch(function (err) {
+            console.log(chalk.red(err));
         })
 
 }
