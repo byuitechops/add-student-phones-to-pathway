@@ -1,1 +1,4 @@
 node_modules/
+htmlPages/
+*.csv
+courses.json

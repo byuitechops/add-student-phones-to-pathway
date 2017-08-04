@@ -52,6 +52,8 @@ module.exports = function startNightmare(promptData) {
         .click('#courseSelectorId li:first-child a.d2l-link') //go to course
         .wait('.d2l-navigation-s-item:nth-child(7) d2l-menu-item-link:nth-child(6) a.d2l-menu-item-link') // open course admin without openeing dropdown?
         .click('.d2l-navigation-s-item:nth-child(7) d2l-menu-item-link:nth-child(6) a.d2l-menu-item-link')
+        .wait('li:nth-child(14)>a.vui-link')
+        .click('li:nth-child(14)>a.vui-link')
         //.end()
         .then(function (results) {
             console.log(results);
