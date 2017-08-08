@@ -1,0 +1,42 @@
+<script src="https://localhost:8000/lockerAPIWrapper.js"></script>
+
+<h1>Student Phone Numbers</h1>
+<table>
+    <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Student Phone</th>
+        </tr>
+    </thead>
+    <tbody id="studentInfo">
+    </tbody>
+</table>
+
+<script>
+    function generateTable(course) {
+        var row;
+        course.students.forEach(function(student) {
+            row = "<tr><td>" + student.name + "</td><td>" + student.phone + "</td></tr>";
+            $(row).appendTo('tbody#studentInfo');
+        });
+    }
+
+
+    function getCourse() {
+        locker.readFile("filteredByCourse.json", function(results) {
+            var courses = JSON.parse(results.response);
+            //console.log(courses);
+            var currentCourseTitle = window.top.document.querySelector('div.d2l-navigation-s-header-logo-area>a.d2l-navigation-s-link').innerText,
+                currentCourse;
+            courses.forEach(function(course) {
+                if (course.courseName === currentCourseTitle)
+                    currentCourse = course;
+            });
+            console.log(currentCourse);
+            generateTable(currentCourse)
+        });
+    }
+
+    $(document).ready(getCourse);
+
+</script>
