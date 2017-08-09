@@ -1,4 +1,4 @@
 node_modules/
-htmlPages/
+jsonFiles/
 *.csv
-courses.json
+*.json
