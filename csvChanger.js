@@ -12,17 +12,16 @@ var uniq = require('array-uniq'),
  * writes whatever it's given to a json file
  * it's possible that files could be overwritten this way...
  *************************************************************/
-function writeInstructor(instructor) {
-    var fileName = instructor.name + ".json";
+function writeInstructor(instructorList) {
+    var fileName = "instructorList.json";
 
-    instructor = JSON.stringify(instructor, null, 3);
+    instructorList = JSON.stringify(instructorList, null, 3);
 
     fileName = 'jsonFiles/' + fileName;
-    fs.writeFile(fileName, instructor, function (err) {
+    fs.writeFile(fileName, instructorList, function (err) {
         if (err) console.error(chalk.red(err));
         else console.log(chalk.green(fileName + " written"));
     });
-    //fileExists(fileName, 0, write);
 }
 
 /***********************************************************
@@ -38,7 +37,7 @@ function clearEmptyProfessors(instructors) {
     //console.log(JSON.stringify(filteredInstructors, null, 3));
     //console.log(filteredInstructors.length);
 
-    filteredInstructors.forEach(writeInstructor);
+    writeInstructor(filteredInstructors);
 }
 
 /*****************************************************
@@ -56,13 +55,11 @@ function formatInstructors(instructors, courses) {
         tempCourseName,
         finalList = usernames.map(function (username) {
             tempObj = {
-                name: '',
                 username: username,
                 courses: []
             };
             instructors.forEach(function (instructor) {
                 if (instructor.netId === username) {
-                    tempObj.name = instructor.instructor.replace(/,\s/, ""); // so I don't have to save the json files by their usernames
                     courses.forEach(function (course) {
                         tempCourseName = course.courseName.slice(0, course.courseName.search(/\(/) - 1);
                         //FDREL classes have PATH as their course code. Replacing PATH with the appropriate code based on section number
@@ -85,7 +82,7 @@ function formatInstructors(instructors, courses) {
         });
 
     clearEmptyProfessors(finalList);
-    //finalList.forEach(writeInstructor);
+    //writeInstructor(filteredInstructors);
 }
 
 /*******************************************************

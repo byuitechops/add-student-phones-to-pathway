@@ -1,4 +1,6 @@
 /* D2L Locker API Wrapper */
+/*eslint-env browser*/
+
 var locker = (function () {
     'use strict';
 
@@ -54,7 +56,7 @@ var locker = (function () {
         };
         xhr.send(body);
     }
-    
+
     return {
         'readFile': readFile,
         'deleteFile': deleteFile,
