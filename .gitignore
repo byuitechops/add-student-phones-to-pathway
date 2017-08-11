@@ -2,3 +2,4 @@ node_modules/
 jsonFiles/
 *.csv
 *.json
+*.xlsx

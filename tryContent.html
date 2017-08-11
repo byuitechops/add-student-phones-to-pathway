@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+
+
+    </style>
+</head>
+
+<body>
+    <p>
+        <script>
+            if (!XMLHttpRequest.prototype.sendAsBinary) {
+                XMLHttpRequest.prototype.sendAsBinary = function(sData) {
+                    var nBytes = sData.length,
+                        ui8Data = new Uint8Array(nBytes);
+                    for (var nIdx = 0; nIdx < nBytes; nIdx++) {
+                        ui8Data[nIdx] = sData.charCodeAt(nIdx) & 0xff;
+                    }
+                    /* send as ArrayBufferView...: */
+                    this.send(ui8Data);
+                    /* ...or as ArrayBuffer (legacy)...: this.send(ui8Data.buffer); */
+                };
+            }
+
+            function print() {
+                if (this.readyState === XMLHttpRequest.DONE) {
+                    console.log(this);
+                    try {
+                        console.log(JSON.parse(this.response));
+                    } catch (e) {
+                        console.log(this.response);
+                    }
+                }
+            }
+
+            function fixUrl(url) {
+                var version = "1.14",
+                    orgId = "10011",
+                    moduleId = "1635089",
+                    //                    userId = "3282";
+                    userId = "57638";
+
+                url = url
+                    .replace(/\(userId\)/, userId)
+                    .replace(/\(version\)/, version)
+                    .replace(/\(orgUnitId\)/, orgId)
+                    .replace(/\(moduleId\)/, moduleId);
+                return url;
+
+            }
+
+            function uploadFile(fileText, fileName, url, postedObj) {
+
+                var xhr = new XMLHttpRequest();
+                var divider = "xxBOUNDARYxx";
+                var url = fixUrl(url);
+                var objString = JSON.stringify(postedObj);
+                var body = "--" + divider + "\r\n";
+                body += "Content-Type: application/json\r\n\r\n";
+                body += objString + "\r\n";
+                body += "--" + divider + "\r\n";
+                body += 'Content-Disposition: form-data; name=""; filename="' + fileName + '"\r\n';
+                body += "Content-Type: text/plain\r\n\r\n";
+                body += fileText + "\r\n";
+                body += "--" + divider + "--";
+
+                console.log(body);
+
+                xhr.onreadystatechange = print;
+                xhr.open('POST', url, true);
+                xhr.setRequestHeader('Content-Type', "multipart/mixed;boundary=" + divider);
+                xhr.setRequestHeader("X-Csrf-Token", localStorage['XSRF.Token']);
+
+
+                //                xhr.sendAsBinary(body);
+                xhr.send(body);
+            }
+
+            function getUrl(url) {
+                var xhr = new XMLHttpRequest();
+
+                url = fixUrl(url);
+
+                xhr.onreadystatechange = print;
+                xhr.open('GET', url);
+                xhr.setRequestHeader("X-Csrf-Token", localStorage['XSRF.Token']);
+                xhr.send();
+            }
+
+            function deleteUrl(url) {
+                var xhr = new XMLHttpRequest();
+
+                url = fixUrl(url);
+
+                xhr.onreadystatechange = print;
+                xhr.open('DELETE', url);
+                xhr.setRequestHeader("X-Csrf-Token", localStorage['XSRF.Token']);
+                xhr.send();
+            }
+
+            function uploadFileToContent() {
+                var fileText = "this is my file text.",
+                    fileName = "fileName" + Date.now().toString() + ".html",
+                    url = "/d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)/structure/",
+                    postedObj = {
+                        "Title": fileName,
+                        "ShortTitle": "Test",
+                        "Type": 1,
+                        "TopicType": 1,
+                        "Url": "/content/enforced/10011-Joshua-McKinney-Sandbox-CO/" + fileName,
+                        "StartDate": null,
+                        "EndDate": null,
+                        "DueDate": null,
+                        "IsHidden": true,
+                        "IsLocked": false,
+                        "OpenAsExternalResource": false,
+                        "Description": null,
+                        "MajorUpdate": null,
+                        "MajorUpdateText": "update text",
+                        "ResetCompletionTracking": false
+                    };
+
+                uploadFile(fileText, fileName, url, postedObj);
+
+            }
+
+            function uploadFileToLocker() {
+                var fileObj = {
+                        cool: true,
+                        "useful": false
+                    },
+                    fileText = JSON.stringify(fileObj),
+                    fileName = "fileName" + Date.now().toString() + ".json",
+                    url = "/d2l/api/le/(version)/locker/myLocker/",
+                    postedObj = {
+                        "Description": "my file name is " + fileName,
+                        "IsPublic": false
+                    };
+
+                uploadFile(fileText, fileName, url, postedObj);
+
+            }
+
+            function uploadFileToLockerWithID() {
+                var fileText = "this is my locker file text.",
+                    fileName = "fileName" + Date.now().toString() + ".html",
+                    url = "/d2l/api/le/(version)/locker/user/(userId)/",
+                    postedObj = {
+                        "Description": "my file name is " + fileName,
+                        "IsPublic": false
+                    };
+
+                uploadFile(fileText, fileName, url, postedObj);
+
+            }
+
+        </script>
+    </p>
+    <p>
+        <button onclick="uploadFileToContent();">uploadFile to content</button>
+        <button onclick="uploadFileToLocker();">uploadFile to locker</button>
+        <button onclick="uploadFileToLockerWithID();">uploadFile to lockerWithId</button>
+        <button onclick="getUrl('/d2l/api/le/(version)/(orgUnitId)/content/toc');">get toc</button>
+        <button onclick="getUrl('/d2l/api/le/(version)/(orgUnitId)/content/root/');">get root</button>
+        <button onclick="getUrl('/d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)');">get module</button>
+        <button onclick="getUrl('/d2l/api/le/(version)/(orgUnitId)/content/modules/(moduleId)/structure/');">get structure</button>
+        <button onclick="getUrl('/d2l/api/le/(version)/locker/myLocker/');">get locker files</button>
+        <button onclick="deleteUrl('/d2l/api/le/(version)/locker/myLocker/coolfile.html');">delete locker files</button>
+        <button onclick="getUrl('/d2l/api/le/(version)/locker/myLocker/fileName1480366639069.json');">getJson</button>
+        <button onclick="getUrl('/d2l/api/le/(version)/locker/user/(userId)/fileName1480368040701.html');">get grants file</button>
+        <button onclick="getUrl('/d2l/api/lp/(version)/users/');">get users</button>
+    </p>
+</body>
+
+</html>
