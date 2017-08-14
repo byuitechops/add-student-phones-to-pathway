@@ -1,7 +1,6 @@
 /*eslint-env node*/
 /*eslint no-console:0*/
 
-//var list = [1, 2, 3, 4, 5, 6, 1, 2, 3];
 var uniq = require('array-uniq'),
     fs = require('fs'),
     chalk = require('chalk'),
@@ -9,13 +8,13 @@ var uniq = require('array-uniq'),
 
 
 /*************************************************************
- * writes whatever it's given to a json file
+ * writes whatever it's given to a js file
  * it's possible that files could be overwritten this way...
  *************************************************************/
 function writeInstructor(instructorList) {
-    var fileName = "instructorList.json";
+    var fileName = "list.js";
 
-    instructorList = JSON.stringify(instructorList, null, 3);
+    instructorList = "var instructors = " + JSON.stringify(instructorList, null, 3) + ";";
 
     fileName = 'jsonFiles/' + fileName;
     fs.writeFile(fileName, instructorList, function (err) {
@@ -25,7 +24,8 @@ function writeInstructor(instructorList) {
 }
 
 /***********************************************************
- * filteres out instructors without corresponding courses
+ * filteres out instructors without ANY
+ * corresponding courses
  **********************************************************/
 function clearEmptyProfessors(instructors) {
     //console.log(instructors.length);
@@ -34,7 +34,6 @@ function clearEmptyProfessors(instructors) {
         if (instructor.courses.length >= 1)
             return instructor;
     });
-    //console.log(JSON.stringify(filteredInstructors, null, 3));
     //console.log(filteredInstructors.length);
 
     writeInstructor(filteredInstructors);
@@ -45,9 +44,19 @@ function clearEmptyProfessors(instructors) {
  * course they teach and each student in that course
  *****************************************************/
 function formatInstructors(instructors, courses) {
-    var usernames = instructors.map(function (instructor) {
-        return instructor.netId;
-    });
+    var iNum,
+        usernames = instructors.map(function (instructor) {
+            //I-number is the path Username for all but 1 user
+            if (instructor.lastname == 'Wilson' && instructor.middlename == 'Sharp' && instructor.firstname == 'Chelsey') {
+                return instructor.username;
+            } else {
+                //remove '-' from all inumbers
+                iNum = instructor.INumber.replace(/-/g, '');
+                instructor.INumber = iNum;
+
+                return instructor.INumber;
+            }
+        });
 
     usernames = uniq(usernames);
 
@@ -59,20 +68,20 @@ function formatInstructors(instructors, courses) {
                 courses: []
             };
             instructors.forEach(function (instructor) {
-                if (instructor.netId === username) {
+                if (instructor.INumber === username || instructor.username === username) {
                     courses.forEach(function (course) {
                         tempCourseName = course.name.slice(0, course.name.search(/\(/) - 1);
                         //FDREL classes have PATH as their course code. Replacing PATH with the appropriate code based on section number
-                        if (instructor.course.search(/FDREL PATH/) > -1) {
+                        if (instructor.coursenumber.search(/FDREL PATH/) > -1) {
                             if (instructor.section >= 1001 && instructor.section <= 1066) {
-                                instructor.course = instructor.course.replace(/PATH/, "200");
+                                instructor.coursenumber = instructor.coursenumber.replace(/PATH/, "200");
                             } else if ((instructor.section >= 1095 && instructor.section <= 1105) || instructor.section == 1112) {
-                                instructor.course = instructor.course.replace(/PATH/, "122");
+                                instructor.coursenumber = instructor.coursenumber.replace(/PATH/, "122");
                             } else if (instructor.section >= 1106 && instructor.section <= 1111) {
-                                instructor.course = instructor.course.replace(/PATH/, "121");
+                                instructor.coursenumber = instructor.coursenumber.replace(/PATH/, "121");
                             }
                         }
-                        if (tempCourseName == instructor.course + ": " + instructor.section) {
+                        if (tempCourseName == instructor.coursenumber + ": " + instructor.section) {
                             tempObj.courses.push(course);
                         }
                     });
@@ -82,7 +91,6 @@ function formatInstructors(instructors, courses) {
         });
 
     clearEmptyProfessors(finalList);
-    //writeInstructor(filteredInstructors);
 }
 
 /*******************************************************
@@ -110,9 +118,6 @@ function formatStudents(courses) {
             if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
         });
     });
-    //console.log(JSON.stringify(courses, null, 3));
-
-    //writeResults(courses);
     readInstructorFile(courses);
 }
 
@@ -126,7 +131,7 @@ function getCourseList(students) {
     });
     courses = uniq(courses);
 
-    // Loop magic
+    // Loop magic to create course objects that contain student data
     var tempObj,
         finalList = courses.map(function (course) {
             tempObj = {
