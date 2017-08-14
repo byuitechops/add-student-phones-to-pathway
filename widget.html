@@ -34,6 +34,7 @@
 
     //generates the html table in the widget
     function generateTable(course) {
+        console.log("generateTable running");
         var row;
         course.students.forEach(function(student) {
             row = "<tr><td>" + student.name + "</td><td>" + student.phone + "</td></tr>";
@@ -43,7 +44,7 @@
 
     //reads the course's json file from the locker
     function readLocker() {
-        locker.readFile("filteredByCourse.json", function(results) {
+        locker.readFile("instructorData.json", function(results) {
             if (results.status != 200) {
                 console.log('unable to find student information');
                 return;
@@ -54,7 +55,7 @@
     }
 
     // determines what course the widget is in
-    function getCurrentCourse(instructor) {
+    function getCurrentCourse(courses) {
         $('div#phoneWrapper').css({
             display: 'block'
         });
@@ -64,7 +65,7 @@
             if (xhr.readyState == 4) {
                 var currentCourseTitle = JSON.parse(xhr.response).Name.toString(),
                     currentCourse;
-                instructor.courses.forEach(function(course) {
+                courses.forEach(function(course) {
                     if (course.courseName === currentCourseTitle)
                         currentCourse = course;
                 });
@@ -79,7 +80,7 @@
         xhr.send();
     }
 
-    $(document).ready(getCurrentCourse);
-    //$(document).ready(readLocker);
+    //$(document).ready(getCurrentCourse);
+    $(document).ready(readLocker);
 
 </script>
