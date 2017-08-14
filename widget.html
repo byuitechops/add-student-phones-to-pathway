@@ -1,4 +1,5 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://localhost:8000/jsonFiles/list.js"></script>
 <div id="phoneWrapper" style="display: none;">
     <h1>Student Phone Numbers</h1>
     <table>
@@ -31,6 +32,7 @@
         };
     }());
 
+    //generates the html table in the widget
     function generateTable(course) {
         var row;
         course.students.forEach(function(student) {
@@ -39,31 +41,30 @@
         });
     }
 
-
-
+    //reads the course's json file from the locker
     function readLocker() {
         locker.readFile("filteredByCourse.json", function(results) {
             if (results.status != 200) {
                 console.log('unable to find student information');
                 return;
             }
-            $('div#phoneWrapper').css({
-                display: 'block'
-            });
-            var courses = JSON.parse(results.response);
-            getCurrentCourse(courses);
+            var instructor = JSON.parse(results.response);
+            getCurrentCourse(instructor);
         });
     }
 
-
-    function getCurrentCourse(courses) {
+    // determines what course the widget is in
+    function getCurrentCourse(instructor) {
+        $('div#phoneWrapper').css({
+            display: 'block'
+        });
         var xhr = new XMLHttpRequest();
         //var currentCourseTitle = window.top.document.querySelector('div.d2l-navigation-s-header-logo-area>a.d2l-navigation-s-link').innerText,
         function findMatch() {
             if (xhr.readyState == 4) {
                 var currentCourseTitle = JSON.parse(xhr.response).Name.toString(),
                     currentCourse;
-                courses.forEach(function(course) {
+                instructor.courses.forEach(function(course) {
                     if (course.courseName === currentCourseTitle)
                         currentCourse = course;
                 });
@@ -78,6 +79,7 @@
         xhr.send();
     }
 
-    $(document).ready(readLocker);
+    $(document).ready(getCurrentCourse);
+    //$(document).ready(readLocker);
 
 </script>

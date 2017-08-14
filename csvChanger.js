@@ -61,7 +61,7 @@ function formatInstructors(instructors, courses) {
             instructors.forEach(function (instructor) {
                 if (instructor.netId === username) {
                     courses.forEach(function (course) {
-                        tempCourseName = course.courseName.slice(0, course.courseName.search(/\(/) - 1);
+                        tempCourseName = course.name.slice(0, course.name.search(/\(/) - 1);
                         //FDREL classes have PATH as their course code. Replacing PATH with the appropriate code based on section number
                         if (instructor.course.search(/FDREL PATH/) > -1) {
                             if (instructor.section >= 1001 && instructor.section <= 1066) {
@@ -130,7 +130,7 @@ function getCourseList(students) {
     var tempObj,
         finalList = courses.map(function (course) {
             tempObj = {
-                courseName: course,
+                name: course,
                 students: []
             };
             students.forEach(function (student) {
