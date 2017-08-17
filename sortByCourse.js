@@ -1,6 +1,7 @@
 /*eslint-env node*/
 /*eslint no-console:0*/
 
+
 var uniq = require('array-uniq'),
     fs = require('fs'),
     chalk = require('chalk'),
@@ -8,7 +9,50 @@ var uniq = require('array-uniq'),
 
 //ATTACH AN OU NUMBER TO EACH COURSE!!
 
+function writeList(courses) {
+    var content = 'var courses = ' + JSON.stringify(courses) + ';',
+        fileName = "courses.js";
+    fs.writeFile('jsonFiles/' + fileName, content, function(err){
+        if(err) console.error(chalk.red(err));
+        else{
+            console.log(chalk.green(fileName + " was written successfully"));
+        }
+    });
+}
 
+
+function attachOU(courses, masterCourseList) {
+    var matches = 0;
+    courses.forEach(function (course) {
+        masterCourseList.forEach(function (masterCourse) {
+            if (masterCourse.name == course.name) {
+                course.ou = masterCourse.ou;
+                matches++;
+            }
+        });
+    });
+
+    if(matches < courses.length){
+        console.log(chalk.red("Unable to assign OU's to each course"));
+        return;
+    }
+
+    writeList(courses);
+}
+
+
+function readMasterCourseList(courses) {
+    fs.readFile('PathSpring2017Courses.csv', 'binary', function (err, data) {
+        if (err) console.error(chalk.red(err));
+        data = data.toString();
+        var masterCourseList = d3.csvParse(data);
+
+        //console.log('masterCourseList', masterCourseList.length);
+        //console.log(JSON.stringify(masterCourseList[0], null, 3));
+
+        attachOU(courses, masterCourseList);
+    });
+}
 
 /*******************************************
  * Puts the students in alphabetical order
@@ -21,7 +65,9 @@ function formatStudents(courses) {
             if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
         });
     });
-    //readInstructorFile(courses);
+
+    //console.log(JSON.stringify(courses, null, 3));
+    readMasterCourseList(courses);
 }
 
 /************************************
