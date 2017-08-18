@@ -5,14 +5,15 @@
 var uniq = require('array-uniq'),
     fs = require('fs'),
     chalk = require('chalk'),
-    d3 = require('d3-dsv');
+    d3 = require('d3-dsv'),
+    settings = require('./settings.json');
 
 //ATTACH AN OU NUMBER TO EACH COURSE!!
 
 function writeList(courses) {
     var content = 'var courses = ' + JSON.stringify(courses) + ';',
-        fileName = "courses.js";
-    fs.writeFile('jsonFiles/' + fileName, content, function(err){
+        fileName = settings.preValenceCourses;
+    fs.writeFile(fileName, content, function(err){
         if(err) console.error(chalk.red(err));
         else{
             console.log(chalk.green(fileName + " was written successfully"));
@@ -42,7 +43,8 @@ function attachOU(courses, masterCourseList) {
 
 
 function readMasterCourseList(courses) {
-    fs.readFile('PathSpring2017Courses.csv', 'binary', function (err, data) {
+    var fileName = settings.courseMasterList ;
+    fs.readFile(fileName, 'binary', function (err, data) {
         if (err) console.error(chalk.red(err));
         data = data.toString();
         var masterCourseList = d3.csvParse(data);
@@ -105,7 +107,8 @@ function getCourseList(students) {
  * reads student data from the csv
  ***************************************/
 function getStudents() {
-    fs.readFile('StudentSectionEnrollmentPhoneList.csv', 'binary', function (err, data) {
+    var fileName = settings.studentCSV;
+    fs.readFile(fileName, 'binary', function (err, data) {
         if (err) console.error(chalk.red(err));
         data = data.toString();
         var students = d3.csvParse(data);
