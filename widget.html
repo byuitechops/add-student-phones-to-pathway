@@ -1,11 +1,14 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://localhost:8000/jsonFiles/list.js"></script>
-<div id="phoneWrapper" style="display: none;">
-    <h1>Student Phone Numbers</h1>
+<div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="/d2l/common/dialogs/quickLink/quickLink.d2l?ou={orgUnitId}&amp;type=coursefile&amp;fileId=studentPhones%2ftest.js" target="_self"></script>
+</div>
+
+<div id="phoneWrapper" style="overflow-y: scroll; display: none; height: 400px;">
+    <h1 style="font-size: 23pt;">Student Phone Numbers</h1>
     <table>
         <thead>
             <tr>
-                <th>Name Last, First</th>
+                <th style="width: 250px;">Name Last, First</th>
                 <th>Phone Number</th>
             </tr>
         </thead>
@@ -15,72 +18,23 @@
 </div>
 
 <script>
-    var locker = (function() {
-        function readFile(fileName, callback) {
-            var xhr = new XMLHttpRequest();
-            xhr.open('GET', '/d2l/api/le/1.14/locker/myLocker/' + fileName);
-            xhr.setRequestHeader("X-Csrf-Token", localStorage['XSRF.Token']);
-            xhr.onreadystatechange = function() {
-                if (xhr.readyState === 4) {
-                    callback(xhr);
-                }
-            };
-            xhr.send();
-        }
-        return {
-            'readFile': readFile,
-        };
-    }());
-
     //generates the html table in the widget
-    function generateTable(course) {
-        console.log("generateTable running");
-        var row;
-        course.students.forEach(function(student) {
-            row = "<tr><td>" + student.name + "</td><td>" + student.phone + "</td></tr>";
-            $(row).appendTo('tbody#studentInfo');
-        });
-    }
+    function generateTable() {
+        if (course != undefined) {
+            //$('#phoneWrapper').toggleClass('hidden');
+            $('#phoneWrapper').css({
+                display: 'block'
+            });
 
-    //reads the course's json file from the locker
-    function readLocker() {
-        locker.readFile("instructorData.json", function(results) {
-            if (results.status != 200) {
-                console.log('unable to find student information');
-                return;
-            }
-            var instructor = JSON.parse(results.response);
-            getCurrentCourse(instructor);
-        });
-    }
-
-    // determines what course the widget is in
-    function getCurrentCourse(courses) {
-        $('div#phoneWrapper').css({
-            display: 'block'
-        });
-        var xhr = new XMLHttpRequest();
-        //var currentCourseTitle = window.top.document.querySelector('div.d2l-navigation-s-header-logo-area>a.d2l-navigation-s-link').innerText,
-        function findMatch() {
-            if (xhr.readyState == 4) {
-                var currentCourseTitle = JSON.parse(xhr.response).Name.toString(),
-                    currentCourse;
-                courses.forEach(function(course) {
-                    if (course.courseName === currentCourseTitle)
-                        currentCourse = course;
-                });
-                //console.log(currentCourse);
-                generateTable(currentCourse)
-            }
+            var row;
+            course.students.forEach(function(student) {
+                row = "<tr><td>" + student.name + "</td><td>" + student.phone + "</td></tr>";
+                $(row).appendTo('tbody#studentInfo');
+            });
+        } else {
+            console.log('course data could not be found');
         }
-        var ou = window.location.href.match(/\/home\/(\d+)/)[1],
-            url = '/d2l/api/lp/1.14/courses/' + ou;
-        xhr.open('GET', url);
-        xhr.onreadystatechange = findMatch;
-        xhr.send();
     }
 
-    //$(document).ready(getCurrentCourse);
-    $(document).ready(readLocker);
-
+    $(document).ready(generateTable);
 </script>
