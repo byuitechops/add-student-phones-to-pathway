@@ -1,14 +1,12 @@
 <div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="/d2l/common/dialogs/quickLink/quickLink.d2l?ou={orgUnitId}&amp;type=coursefile&amp;fileId=studentPhones%2ftest.js" target="_self"></script>
+    <script src="https://s.brightspace.com/lib/jquery/2.2.4/jquery.min.js"></script>
 </div>
-
 <div id="phoneWrapper" style="overflow-y: scroll; display: none; height: 400px;">
-    <h1 style="font-size: 23pt;">Student Phone Numbers</h1>
+    <h1 style="font-size: 21pt;">Student Phone Numbers</h1>
     <table>
         <thead>
             <tr>
-                <th style="width: 250px;">Name Last, First</th>
+                <th style="width: 185px;">Name Last, First</th>
                 <th>Phone Number</th>
             </tr>
         </thead>
@@ -18,24 +16,57 @@
 </div>
 
 <script>
-    //generates the html table
-    function generateTable() {
-        if (course != undefined) {
-            //$('#phoneWrapper').toggleClass('hidden');
-            $('#phoneWrapper').css({
-                display: 'block'
-            });
+    function getFile(path) {
+        var url = path + "courseStudentPhones.json",
+            settings = {
+                "X-Csrf-Token": localStorage['XSRF.Token']
+            };
 
-            var row;
-            course.students.forEach(function(student) {
-                row = "<tr><td>" + student.name + "</td><td>" + student.phone + "</td></tr>";
-                $(row).appendTo('tbody#studentInfo');
+        $.ajax(url, settings)
+            .done(function(result) {
+                generateTable(result);
+            })
+            .fail(function(result) {
+                //hide the widget
+                $('#phoneWrapper').closest('.d2l-widget').css({
+                    display: "none"
+                });
             });
-        } else {
-            console.log('course data could not be found');
-        }
     }
 
-    $(document).ready(generateTable);
+    function getPath() {
+        var settings = {
+            "X-Csrf-Token": localStorage['XSRF.Token']
+        };
+        $.ajax("/d2l/api/lp/1.15/courses/{OrgUnitId}", settings)
+            .done(function(result) {
+                //FOR TESTING ONLY!
+                /*var path = result.Path + "studentPhones/";*/
+
+                var path = result.Path;
+
+                getFile(path);
+            }).fail(function() {
+                //hide the widget completely
+                $('#phoneWrapper').closest('.d2l-widget').css({
+                    display: "none"
+                });
+            });
+    }
+
+    function generateTable(course) {
+        //show the table
+        $('#phoneWrapper').css({
+            display: "block"
+        });
+
+        var row;
+        course.students.forEach(function(student) {
+            row = "<tr><td>" + student.name + "</td><td>" + student.phone + "</td></tr>";
+            $(row).appendTo('tbody#studentInfo');
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', getPath);
 
 </script>
