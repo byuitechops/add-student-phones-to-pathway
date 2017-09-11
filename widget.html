@@ -51,17 +51,31 @@
             });
     }
 
+    function addColor(){
+        //add background colors to the tables
+        $('#PhoneWrapper tr:nth-child(even)').css({
+            "background-color": "#dedede"
+        });
+    }
+    
     function generateTable(course) {
         //show the table
         $('#phoneWrapper').css({
             display: "block"
         });
-
+        
         var row;
-        course.students.forEach(function(student) {
-            row = "<tr><td>" + student.name + "</td><td>" + student.phone + "</td></tr>";
+        course.students.forEach(function(student, i) {
+            if(i % 2 == 0)
+                row = "<tr style='background-color:#dcdcdc'>";
+            else
+                row = "<tr>";
+            
+            row += "<td style='padding:5px'>" + student.name + "</td><td style='padding:5px'>" + student.phone + "</td></tr>";
             $(row).appendTo('tbody#studentInfo');
         });
+        
+        addColor();
     }
 
     document.addEventListener('DOMContentLoaded', getPath);

@@ -48,7 +48,7 @@ function generateBatchFile() {
                     console.error(chalk.red(err));
                     return;
                 }
-                console.log("\nBatch File Complete");
+                console.log("\nBatch File Complete\nBatch file saved as " + chalk.green(settings.batchFile));
             });
         });
 }

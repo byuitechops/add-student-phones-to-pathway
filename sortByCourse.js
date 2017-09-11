@@ -108,7 +108,7 @@ function getCourseList(students) {
                 if (student.D2L_COURSE_TITLE == course) {
                     tempObj.students.push({
                         name: student.LAST_NAME + ', ' + student.FIRST_NAME,
-                        phone: student.PHONE
+                        phone: student.PRIMARY_PHONE
                     });
                 }
             });
