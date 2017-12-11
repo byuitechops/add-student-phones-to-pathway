@@ -8,7 +8,7 @@ function callD2lScrape(course, cb) {
             cb(err, null);
             return;
         }
-        //console.log(data.Path);
+        console.log(data.Path);
         course.path = data.Path;
         cb(null, null);
     });
