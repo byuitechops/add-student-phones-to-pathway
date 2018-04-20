@@ -1,0 +1,33 @@
+{
+  "name": "add-student-phones-to-pathway",
+  "version": "1.0.0",
+  "description": "add a widget to give professors access to relevant student information",
+  "main": "createBatch.js",
+  "dependencies": {
+    "array-uniq": "^1.0.3",
+    "async": "^2.6.0",
+    "chalk": "^2.4.0",
+    "course-list-generator": "github:byuitechops/course-list-generator",
+    "d3-dsv": "^1.0.5",
+    "handlebars": "^4.0.10",
+    "nightmare": "^2.10.0",
+    "nightmare-helpers": "^1.0.0",
+    "nightmare-iframe-manager": "^0.0.4",
+    "nightmare-upload": "^0.1.1",
+    "prompt": "^1.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/byuitechops/add-student-phones-to-pathway.git"
+  },
+  "author": "Daniel Green",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/byuitechops/add-student-phones-to-pathway/issues"
+  },
+  "homepage": "https://github.com/byuitechops/add-student-phones-to-pathway#readme"
+}
