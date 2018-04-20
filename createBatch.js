@@ -5,6 +5,7 @@ var fs = require('fs'),
     chalk = require('chalk'),
     settings = require('./settings.json'),
     courses = require('./jsonFiles/' + settings.postValenceCourse),
+    path = require('path'),
     batch = '',
     async = require('async');
 
@@ -26,10 +27,10 @@ function addCourseToBatch(course, cb) {
     *******************************************************************************************/
 
     /* FILES AS JSON **************************************************************************/
-    var path = course.path.replace(/\//g, '\\').replace(/\\content\\enforced\\/, ''),
+    var externalPath = course.path.replace(/\//g, '\\').replace(/\\content\\enforced\\/, ''),
         fileName = course.name.replace(/:/, '').replace(/ (\(Pa)[\s\S]+/, '') + '.json';
 
-    batch += '\n copy "jsonFiles\\' + fileName + '" "Y:' + path + 'courseStudentPhones.json"';
+    batch += `\n copy "${path.resolve('./jsonFiles')}\\${fileName}" "Y:${externalPath}courseStudentPhones.json"`;
     cb();
     /******************************************************************************************/
 }
@@ -39,18 +40,18 @@ function addCourseToBatch(course, cb) {
  * writes the batch file
  ***********************************************/
 function generateBatchFile() {
-    batch += "@echo on",
-        async.each(courses, addCourseToBatch, function () {
-            batch += "\n pause";
+    batch += '@echo on',
+    async.each(courses, addCourseToBatch, function () {
+        batch += '\n pause';
 
-            fs.writeFile(settings.batchFile, batch, function (err) {
-                if (err) {
-                    console.error(chalk.red(err));
-                    return;
-                }
-                console.log("\nBatch File Complete\nBatch file saved as " + chalk.green(settings.batchFile));
-            });
+        fs.writeFile(settings.batchFile, batch, function (err) {
+            if (err) {
+                console.error(chalk.red(err));
+                return;
+            }
+            console.log('\nBatch File Complete\nBatch file saved as ' + chalk.green(settings.batchFile));
         });
+    });
 }
 
 /****************************************
@@ -71,8 +72,8 @@ function writeCourse(course, cb) {
     fs.writeFile('jsonFiles/' + fileName, courseStr, 'binary', function (err) {
         if (err) {
             cb({
-                "err": err,
-                "course": course
+                'err': err,
+                'course': course
             });
             return;
         }
