@@ -1,7 +1,6 @@
 {
-    "preValenceCourses": "jsonFiles/courses.js",
-    "studentCSV": "StudentPhones5.csv",
-    "masterCourseList": "PathFall2017Courses.csv",
+    "studentCSV": "StudentPhones.csv",
+    "masterCourseList": "PathFall2018Courses.csv",
     "postValenceCourse": "coursesWithPaths.json",
     "batchFile": "uploadCourses.bat"
 }
