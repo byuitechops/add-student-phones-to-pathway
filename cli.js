@@ -30,7 +30,7 @@ function sortCallback(err, fileName) {
 
 
 function main() {
-    if (process.argv[2] && path.extname(process.argv[2] === '.csv')) {
+    if (process.argv[2] && path.extname(process.argv[2]) === '.csv') {
         sortByCourse(process.argv[2], sortCallback);
     } else {
         generateCourseList('CourseList.csv', sortByCourse);

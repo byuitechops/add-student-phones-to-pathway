@@ -10,6 +10,7 @@
 module.exports = (fileName, finalCallback) => {
     var fs = require('fs'),
         d3 = require('d3-dsv'),
+        chalk = require('chalk'),
         settings = require('./settings.json');
 
     /**********************************************
@@ -128,6 +129,9 @@ module.exports = (fileName, finalCallback) => {
                 });
                 return tempObj;
             });
+
+        var unusedStudents = students.filter(student => !courses.includes(student.D2L_COURSE_TITLE));
+        if (unusedStudents.length > 0) console.log(chalk.yellow('Students without courses found'));
 
         formatStudents(finalList);
     }
