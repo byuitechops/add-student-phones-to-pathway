@@ -3,8 +3,6 @@
 const chalk = require('chalk');
 const path = require('path');
 const courseGenerator = require('course-list-generator');
-
-// TODO export this file so it doesn't run after being required
 const sortByCourse = require('./sortByCourse.js');
 
 

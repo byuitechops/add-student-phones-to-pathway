@@ -2,6 +2,12 @@
 /*eslint no-console:0*/
 /*global courses d2lScrape async download*/
 
+/*****************************************************
+ * This file uses the D2L API to get the file path to
+ * the given courses. This is needed so we can access
+ * these courses programmatically via webDav.
+ *****************************************************/
+
 function callD2lScrape(course, cb) {
     d2lScrape.getCourseInfo(course.ou, function (err, data) {
         if (err){
@@ -23,7 +29,7 @@ function getPath() {
         console.log(courses[0]);
         
         //download here
-        var fileName = "coursesWithPaths.json"
+        var fileName = 'coursesWithPaths.json';
         var alteredCourses = JSON.stringify(courses, null, 3);
         download(alteredCourses, fileName);
         

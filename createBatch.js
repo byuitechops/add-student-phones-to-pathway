@@ -18,21 +18,11 @@ var fs = require('fs'),
  * called with async.each in generateBatchFile
  ***********************************************/
 function addCourseToBatch(course, cb) {
-    /* FILES AS JS*****************************************************************************
-    var path = course.path.replace(/\//g, '\\').replace(/\\content\\enforced\\/, ''),
-        fileName = course.name.replace(/:/, '').replace(/ (\(Pa)[\s\S]+/, '') + '.js';
-
-    batch += '\n copy "jsonFiles\\' + fileName + '" "Y:' + path + 'courseStudentPhones.js"';
-    cb();
-    *******************************************************************************************/
-
-    /* FILES AS JSON **************************************************************************/
     var externalPath = course.path.replace(/\//g, '\\').replace(/\\content\\enforced\\/, ''),
         fileName = course.name.replace(/:/, '').replace(/ (\(Pa)[\s\S]+/, '') + '.json';
 
     batch += `\n copy "${path.resolve('./jsonFiles')}\\${fileName}" "Y:${externalPath}courseStudentPhones.json"`;
     cb();
-    /******************************************************************************************/
 }
 
 /***********************************************
@@ -59,15 +49,8 @@ function generateBatchFile() {
  * called with async.each in splitCourses
  ****************************************/
 function writeCourse(course, cb) {
-    /* FILE AS JS ***************************************************************************
-    var fileName = course.name.replace(/:/, '').replace(/ (\(Pa)[\s\S]+/, '') + '.js',
-        courseStr = "var course = " + JSON.stringify(course) + ";";
-    *****************************************************************************************/
-
-    /* FILE AS JSON **************************************************************************/
     var fileName = course.name.replace(/:/, '').replace(/ (\(Pa)[\s\S]+/, '') + '.json',
         courseStr = JSON.stringify(course);
-    /******************************************************************************************/
 
     fs.writeFile('jsonFiles/' + fileName, courseStr, 'binary', function (err) {
         if (err) {

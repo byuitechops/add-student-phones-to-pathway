@@ -1,20 +1,15 @@
 /*eslint-env node*/
 /*eslint no-console:0*/
 
-module.exports = function main(fileName, finalCallback) {
+/***************************************************
+ * sortByCourse organizes student data by course
+ ***************************************************/
+'use-strict';
 
-    /***************************************************
-     * sortByCourse takes the masterCourseList and 
-     * studentCSV and outputs preValenceCourses
-     ***************************************************/
-
-    var uniq = require('array-uniq'),
-        fs = require('fs'),
-        chalk = require('chalk'),
+module.exports = (fileName, finalCallback) => {
+    var fs = require('fs'),
         d3 = require('d3-dsv'),
         settings = require('./settings.json');
-
-    'use-strict';
 
     /**********************************************
      * Writes preValenceCourses
@@ -32,9 +27,9 @@ module.exports = function main(fileName, finalCallback) {
         }
 
         var content = `var courses = ${JSON.stringify(courses)};`,
-            outputFileName = "jsonFiles/courses.js";
+            outputFileName = 'jsonFiles/courses.js';
 
-        fs.writeFile(outputFileName, content, function (err) {
+        fs.writeFile(outputFileName, content, err => {
             if (err) {
                 finalCallback(err);
                 // console.error(chalk.red(err));
@@ -50,8 +45,8 @@ module.exports = function main(fileName, finalCallback) {
      *********************************************/
     function attachOU(courses, masterCourseList) {
         var matches = 0;
-        courses.forEach(function (course) {
-            masterCourseList.forEach(function (masterCourse) {
+        courses.forEach(course => {
+            masterCourseList.forEach(masterCourse => {
                 if (masterCourse.name == course.name) {
                     course.ou = masterCourse.ou;
                     matches++;
@@ -60,7 +55,7 @@ module.exports = function main(fileName, finalCallback) {
         });
 
         if (matches < courses.length) {
-            console.log(chalk.red("Unable to assign OU's to each course"));
+            finalCallback(new Error('Unable to assign OU\'s to each course'));
             return;
         }
 
@@ -73,15 +68,14 @@ module.exports = function main(fileName, finalCallback) {
      * to connect each course with its OU number
      *****************************************/
     function readMasterCourseList(courses) {
-        // TODO did I break this?
-        // var fileName = settings.masterCourseList;
-        fs.readFile(fileName, 'binary', function (err, data) {
-            if (err) console.error(chalk.red(err));
+        fs.readFile(fileName, 'binary', (err, data) => {
+            if (err) {
+                finalCallback(err);
+                return;
+            }
+
             data = data.toString();
             var masterCourseList = d3.csvParse(data);
-
-            //console.log('masterCourseList', masterCourseList.length);
-            //console.log(JSON.stringify(masterCourseList[0], null, 3));
 
             attachOU(courses, masterCourseList);
         });
@@ -91,15 +85,14 @@ module.exports = function main(fileName, finalCallback) {
      * Puts the students in alphabetical order
      ******************************************/
     function formatStudents(courses) {
-        courses.forEach(function (course) {
+        courses.forEach(course => {
             //sort students
-            course.students.sort(function (a, b) {
+            course.students.sort((a, b) => {
                 if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
                 if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
             });
         });
 
-        //console.log(JSON.stringify(courses, null, 3));
         readMasterCourseList(courses);
     }
 
@@ -107,20 +100,23 @@ module.exports = function main(fileName, finalCallback) {
      * Organizes student data by course
      ***********************************/
     function getCourseList(students) {
-        // get an array of each course
-        var courses = students.map(function (student) {
-            return student.D2L_COURSE_TITLE;
-        });
-        courses = uniq(courses);
+        // get a unique array of courses
+        var courses = students.reduce((accum, student) => {
+            if (!accum.includes(student.D2L_COURSE_TITLE))
+                accum.push(student.D2L_COURSE_TITLE);
+
+            return accum;
+        }, []);
 
         // Loop magic to create course objects that contain student data
         var tempObj,
-            finalList = courses.map(function (course) {
+            finalList = courses.map(course => {
                 tempObj = {
                     name: course,
                     students: []
                 };
-                students.forEach(function (student) {
+                // get each student matched to the current course
+                students.forEach(student => {
                     if (student.D2L_COURSE_TITLE == course) {
                         tempObj.students.push({
                             name: `${student.LAST_NAME}, ${student.FIRST_NAME}`,
@@ -140,15 +136,16 @@ module.exports = function main(fileName, finalCallback) {
      ***************************************/
     function getStudents() {
         var fileName = settings.studentCSV;
-        fs.readFile(fileName, 'binary', function (err, data) {
-            if (err) console.error(chalk.red(err));
+        fs.readFile(fileName, 'binary', (err, data) => {
+            if (err) {
+                finalCallback(err);
+                return;
+            }
             data = data.toString();
             var students = d3.csvParse(data);
 
             getCourseList(students);
-        })
+        });
     }
-
     getStudents();
-
-}
+};
