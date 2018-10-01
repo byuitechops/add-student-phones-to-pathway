@@ -4,17 +4,10 @@
   "description": "add a widget to give professors access to relevant student information",
   "main": "cli.js",
   "dependencies": {
-    "array-uniq": "^1.0.3",
     "async": "^2.6.0",
     "chalk": "^2.4.1",
     "course-list-generator": "github:byuitechops/course-list-generator",
-    "d3-dsv": "^1.0.5",
-    "handlebars": "^4.0.10",
-    "nightmare": "^2.10.0",
-    "nightmare-helpers": "github:byuitechops/nightmare-helpers",
-    "nightmare-iframe-manager": "^0.0.4",
-    "nightmare-upload": "^0.1.1",
-    "prompt": "^1.0.0"
+    "d3-dsv": "^1.0.5"
   },
   "devDependencies": {},
   "scripts": {

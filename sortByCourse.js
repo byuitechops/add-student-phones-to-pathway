@@ -2,7 +2,8 @@
 /*eslint no-console:0*/
 
 /***************************************************
- * sortByCourse organizes student data by course
+ * sortByCourse takes the list of students and
+ * organizes them into a list of courses
  ***************************************************/
 'use-strict';
 
